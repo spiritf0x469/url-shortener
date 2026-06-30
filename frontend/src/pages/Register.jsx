@@ -2,6 +2,7 @@ import { useState } from "react"
 import api from "../services/api"
 import '../styles/auth.css'
 import { Link } from "react-router-dom"
+import {toast} from "react-toastify"
 export default function Register(){
     const [username,setUsername]=useState("")
     const [password,setPassword]=useState("")
@@ -9,11 +10,11 @@ export default function Register(){
         e.preventDefault()
         try{
             await api.post("register/",{username,password})
-            alert("Registration successful!")
+            toast.success("Registration successful!")
         }
         catch(error){
             console.log(error.response?.data)
-            alert("Registration failed")
+            toast.success("Registration failed")
         }
     }
     return(

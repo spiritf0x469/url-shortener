@@ -2,6 +2,8 @@ import { useEffect,useState } from "react"
 import { Navigate,useNavigate } from "react-router-dom"
 import api from "../services/api"
 import '../styles/dashboard.css'
+import {FaCopy,FaEdit,FaTrash,FaSignOutAlt,FaLink} from "react-icons/fa"
+import { toast } from "react-toastify"
 export default function Dashboard(){
     const[urls,setUrls]=useState([])
     const[originalurl,setOriginalurl]=useState("")
@@ -11,8 +13,14 @@ export default function Dashboard(){
     const createurl=async(e)=>{
         e.preventDefault()
         try{
-            if(editingid) await api.put(`shorten/${editingid}/`,{original_url:originalurl})
-            else await api.post("shorten/",{original_url:originalurl})
+            if(editingid){
+                await api.put(`shorten/${editingid}/`,{original_url:originalurl})
+                toast.success("Updated!")
+            }
+            else{
+                await api.post("shorten/",{original_url:originalurl})
+                toast.success("Added URL")
+            }
             setOriginalurl("")
             setEditingid(null)
             fetchurls()
@@ -29,6 +37,7 @@ export default function Dashboard(){
     const handledelete=async(id)=>{
         try{
             await api.delete(`shorten/${id}/`)
+            toast.success("Deleted!")
             fetchurls()
         }
         catch(error){console.log(error.response?.data)}
@@ -41,11 +50,18 @@ export default function Dashboard(){
         localStorage.clear()
         navigate("/")
     }
+    const handlecopy=async(shorturl)=>{
+        try{
+            await navigator.clipboard.writeText(shorturl)
+            toast.success("Copeid!")
+        }
+        catch(error){console.log(error)}
+    }
     return(
         <div className="dashboard">
             <div className="dashboard-header">
                 <h1>Dashboard</h1>
-                <button onClick={handlelogout}  className="logout-btn">logout</button>
+                <button onClick={handlelogout}  className="logout-btn"><FaSignOutAlt /> logout</button>
             </div>
             <form action="" onSubmit={createurl} className="url-form">
                 <input type="url" placeholder="enter url" value={originalurl} onChange={(e)=>setOriginalurl(e.target.value)}/>
@@ -61,8 +77,9 @@ export default function Dashboard(){
                     <p><strong>short:</strong> {url.short_url}</p>
                     <p><strong>clicks:</strong> {url.clicks}</p>
                     <div className="card-buttons">
-                        <button onClick={()=>handleedit(url)} className="edit-btn">edit</button>
-                        <button onClick={()=>handledelete(url.id)} className="delete-btn">delete</button>
+                        <button onClick={()=>{handlecopy(url.short_url)}} className="copy-btn"><FaCopy /> copy</button>
+                        <button onClick={()=>handleedit(url)} className="edit-btn"><FaEdit /> edit</button>
+                        <button onClick={()=>handledelete(url.id)} className="delete-btn"><FaTrash /> delete</button>
                     </div>
                 </div>
                 )
