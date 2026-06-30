@@ -14,7 +14,7 @@ export default function Register(){
         }
         catch(error){
             console.log(error.response?.data)
-            toast.success("Registration failed")
+            toast.error("Registration failed")
         }
     }
     return(

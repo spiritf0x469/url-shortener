@@ -21,7 +21,7 @@ export default function Login(){
         }
         catch(error){
             console.log(error.response?.data)
-            toast.success("Invalid credentials")
+            toast.error("Invalid credentials")
         }
     }
     return(
